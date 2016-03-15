@@ -23,7 +23,7 @@ describe Checkout do
 
   describe '#call' do
     subject(:request) { described_class.new(params).call }
-    let(:params) { { checkout: '', checkin: '', adults: '', price: '' } }
+    let(:params) { { checkout: 1, checkin: 2, adults: 3, price: 4, email: 5 } }
 
     before do
       allow(AgodaAPI).to receive(:create_booking).with(params).and_return true
@@ -89,6 +89,13 @@ describe Checkout do
         it 'raises checkout error' do
           expect{ request }.to raise_error(Checkout::CheckoutError, 'provider failure')
         end
+      end
+    end
+
+    context 'creates booking' do
+      it 'calls booking class' do
+        expect(Booking).to receive(:new).with(2, 1, 3, 4, 5, :active).and_return true
+        request
       end
     end
   end
