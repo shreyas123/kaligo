@@ -1,5 +1,4 @@
 require 'spec_helper'
-require_relative '../../lib/agoda_api'
 
 describe AgodaAPI do
   describe '.create_booking' do
