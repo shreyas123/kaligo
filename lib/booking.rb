@@ -1,0 +1,1 @@
+Booking = Class.new(Struct.new :checkin, :checkout, :adults, :price, :email, :status)
