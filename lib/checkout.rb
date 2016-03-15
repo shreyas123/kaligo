@@ -6,24 +6,24 @@ class Checkout
     @booking_params = booking_params
   end
 
-  # def call
-  #   validate_booking_params
-  #   create_external_booking
+  def call
+    validate_booking_params
+    create_external_booking
   #   create_internal_booking
-  # end
+  end
 
-  # private
-  #   def validate_booking_params
-  #     unless (required_booking_params - booking_params.keys).empty?
-  #       raise CheckoutError, "missing param"
-  #     end
-  #   end
+  private
+    def validate_booking_params
+      unless (required_booking_params - booking_params.keys).empty?
+        raise CheckoutError, "missing param"
+      end
+    end
 
-  #   def create_external_booking
-  #     AgodaAPI.create_booking(booking_params)
-  #   rescue AgodaAPI::BookingError
-  #     raise CheckoutError, "provider failure"
-  #   end
+    def create_external_booking
+      AgodaAPI.create_booking(booking_params)
+    rescue AgodaAPI::BookingError
+      raise CheckoutError, "provider failure"
+    end
 
   #   def create_internal_booking
   #     Booking.new(booking_params[:checkin],
@@ -35,8 +35,8 @@ class Checkout
   #                )
   #   end
 
-  #   def required_booking_params
-  #     %i(checkin checkout adults price)
-  #   end
+    def required_booking_params
+      %i(checkin checkout adults price)
+    end
 
 end

@@ -20,4 +20,76 @@ describe Checkout do
 
     it { is_expected.not_to respond_to('booking_params=') }
   end
+
+  describe '#call' do
+    subject(:request) { described_class.new(params).call }
+    let(:params) { { checkout: '', checkin: '', adults: '', price: '' } }
+
+    before do
+      allow(AgodaAPI).to receive(:create_booking).with(params).and_return true
+    end
+
+    context 'validates params' do
+      context 'when params are in proper condition' do
+        it 'does not raise an error' do
+          expect{ request }.to_not raise_error
+        end
+      end
+
+      context 'when one of the required params is missing' do
+        shared_examples_for "missing params error" do
+          describe "error" do
+            it "raises CheckoutError with missing params" do
+              expect{ request }.to raise_error(Checkout::CheckoutError, 'missing param')
+            end
+          end
+        end
+
+        context 'missing price' do
+          let(:params) { { checkout: '', checkin: '', adults: '', email: '' } }
+          it_behaves_like  "missing params error"
+        end
+
+        context 'missing checkout' do
+          let(:params) { { checkin: '', adults: '', price: '', email: '' } }
+          it_behaves_like  "missing params error"
+        end
+
+        context 'missing checkin' do
+          let(:params) { { checkout: '', adults: '', price: '', email: '' } }
+          it_behaves_like  "missing params error"
+        end
+
+        context 'missing adults' do
+          let(:params) { { checkout: '', checkin: '', price: '', email: '' } }
+          it_behaves_like  "missing params error"
+        end
+
+        context 'missing email' do
+          let(:params) { { checkout: '', checkin: '', adults: '', price: '' } }
+          it 'does not raise error' do
+            expect{ request }.to_not raise_error
+          end
+        end
+      end
+    end
+
+    context 'creates external booking' do
+      context 'when AgodaAPI returns true' do
+        it 'does not raise any error' do
+          expect{ request }.to_not raise_error
+        end
+      end
+
+      context 'when AgodaAPI raises error' do
+        before do
+          allow(AgodaAPI).to receive(:create_booking).with(params).and_raise AgodaAPI::BookingError
+        end
+
+        it 'raises checkout error' do
+          expect{ request }.to raise_error(Checkout::CheckoutError, 'provider failure')
+        end
+      end
+    end
+  end
 end
